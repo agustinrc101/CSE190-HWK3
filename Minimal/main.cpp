@@ -207,9 +207,6 @@ protected:
   
   //project vars
   ObjectManager * projectManager;
-  StereoMode stereoMode = STEREO_BOTH;
-  DisplayMode displayMode = MODE_STEREO;
-  TrackingMode trackingMode = TRACKING_FULL;
 
   //toggles
   bool a_press = false;
@@ -241,6 +238,7 @@ public:
       glfwDestroyWindow(window);
     }
     glfwTerminate();
+	delete(projectManager);
   }
 
   virtual int run(){
@@ -277,111 +275,88 @@ protected:
 
   virtual void draw() = 0;
 
-  void preCreate()
-  {
-    glfwWindowHint(GLFW_DEPTH_BITS, 16);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+  void preCreate() {
+	  glfwWindowHint(GLFW_DEPTH_BITS, 16);
+	  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
   }
 
-  void postCreate()
-  {
-    glfwSetWindowUserPointer(window, this);
-    glfwSetKeyCallback(window, KeyCallback);
-    glfwSetMouseButtonCallback(window, MouseButtonCallback);
-    glfwMakeContextCurrent(window);
+  void postCreate() {
+	  glfwSetWindowUserPointer(window, this);
+	  glfwSetKeyCallback(window, KeyCallback);
+	  glfwSetMouseButtonCallback(window, MouseButtonCallback);
+	  glfwMakeContextCurrent(window);
 
-    // Initialize the OpenGL bindings
-    // For some reason we have to set this experminetal flag to properly
-    // init GLEW if we use a core context.
-    glewExperimental = GL_TRUE;
-    if (0 != glewInit())
-    {
-      FAIL("Failed to initialize GLEW");
-    }
-    glGetError();
+	  // Initialize the OpenGL bindings
+	  // For some reason we have to set this experminetal flag to properly
+	  // init GLEW if we use a core context.
+	  glewExperimental = GL_TRUE;
+	  if (0 != glewInit()) {
+		  FAIL("Failed to initialize GLEW");
+	  }
+	  glGetError();
 
-    if (GLEW_KHR_debug)
-    {
-      GLint v;
-      glGetIntegerv(GL_CONTEXT_FLAGS, &v);
-      if (v & GL_CONTEXT_FLAG_DEBUG_BIT)
-      {
-        //glDebugMessageCallback(glDebugCallbackHandler, this);
-      }
-    }
+	  if (GLEW_KHR_debug) {
+		  GLint v;
+		  glGetIntegerv(GL_CONTEXT_FLAGS, &v);
+		  if (v & GL_CONTEXT_FLAG_DEBUG_BIT) {
+			  //glDebugMessageCallback(glDebugCallbackHandler, this);
+		  }
+	  }
   }
 
-  virtual void initGl()
-  {
+  virtual void initGl() { }
+
+  virtual void shutdownGl() { }
+
+  virtual void finishFrame() {
+	  glfwSwapBuffers(window);
   }
 
-  virtual void shutdownGl()
-  {
+  virtual void destroyWindow() {
+	  glfwSetKeyCallback(window, nullptr);
+	  glfwSetMouseButtonCallback(window, nullptr);
+	  glfwDestroyWindow(window);
   }
 
-  virtual void finishFrame()
-  {
-    glfwSwapBuffers(window);
+  virtual void onKey(int key, int scancode, int action, int mods) {
+	  if (GLFW_PRESS != action) {
+		  return;
+	  }
+
+	  switch (key) {
+	  case GLFW_KEY_ESCAPE:
+		  glfwSetWindowShouldClose(window, 1);
+		  return;
+	  }
   }
 
-  virtual void destroyWindow()
-  {
-    glfwSetKeyCallback(window, nullptr);
-    glfwSetMouseButtonCallback(window, nullptr);
-    glfwDestroyWindow(window);
-  }
+  virtual void update() { }
 
-  virtual void onKey(int key, int scancode, int action, int mods)
-  {
-    if (GLFW_PRESS != action)
-    {
-      return;
-    }
-
-    switch (key)
-    {
-    case GLFW_KEY_ESCAPE:
-      glfwSetWindowShouldClose(window, 1);
-      return;
-    }
-  }
-
-  virtual void update(){
-  
-  
-  }
-
-  virtual void onMouseButton(int button, int action, int mods)
-  {
-  }
+  virtual void onMouseButton(int button, int action, int mods) { }
 
 protected:
-  virtual void viewport(const ivec2& pos, const uvec2& size)
-  {
-    glViewport(pos.x, pos.y, size.x, size.y);
-  }
+	virtual void viewport(const ivec2& pos, const uvec2& size) {
+		glViewport(pos.x, pos.y, size.x, size.y);
+	}
 
 private:
 
-  static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-  {
-    GlfwApp* instance = (GlfwApp *)glfwGetWindowUserPointer(window);
-    instance->onKey(key, scancode, action, mods);
-  }
+	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		GlfwApp* instance = (GlfwApp *)glfwGetWindowUserPointer(window);
+		instance->onKey(key, scancode, action, mods);
+	}
 
-  static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-  {
-    GlfwApp* instance = (GlfwApp *)glfwGetWindowUserPointer(window);
-    instance->onMouseButton(button, action, mods);
-  }
+	static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+		GlfwApp* instance = (GlfwApp *)glfwGetWindowUserPointer(window);
+		instance->onMouseButton(button, action, mods);
+	}
 
-  static void ErrorCallback(int error, const char* description)
-  {
-    FAIL(description);
-  }
+	static void ErrorCallback(int error, const char* description) {
+		FAIL(description);
+	}
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -571,8 +546,7 @@ protected:
     return glfw::createWindow(_mirrorSize);
   }
 
-  void initGl() override
-  {
+  void initGl() override {
     GlfwApp::initGl();
 
     // Disable the v-sync for buffer swap
@@ -647,28 +621,9 @@ protected:
     GlfwApp::onKey(key, scancode, action, mods);
   }
 
+  //==============================================================================PROJECT VARIABLES
   double lastTime = 0;
   glm::mat4 lastView [2] = { glm::mat4(1), glm::mat4(1) };
-  ovrVector3f lastPosition[2] = {ovr::fromGlm(glm::vec3(0)), ovr::fromGlm(glm::vec3(0))};
-  ovrQuatf lastRotation[2] = { ovr::fromGlm(glm::quat()), ovr::fromGlm(glm::quat())};
-  float iod = 0.0f;
-  bool renderCustomBoxes = false;
-  glm::mat4 ringBufferL[30] = { glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1)};
-  glm::mat4 ringBufferR[30] = { glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1) };
-  glm::mat4 ringBufferCL[30] = { glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1) };
-  glm::mat4 ringBufferCR[30] = { glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),
-								glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1),glm::mat4(1) };
-  int ringIndex = 0;
-  int ringLag = 0;
-  int renderingIndex = 0;
-  int renderingDelay = 0;
 
   void draw() final override{
     ovrPosef eyePoses[2];
@@ -732,19 +687,14 @@ protected:
 
 	//==============================================================================CONTROLLER BUTTON HANDLING
 	//Left Stick
-	setCubeScale(Input::getStickL().x * 0.0025f);
+	
 	//Right Stick
-	iod += Input::getStickR().x * 0.007f;
-	if (iod < -0.1f) iod = -0.1f;
-	else if (iod > 0.3f) iod = 0.3f;
 	
 	//Hand Triggers - Right
 	if (Input::getHandTriggerR()) {
 		if (!htr_press) {
 			htr_press = true;
-			renderingDelay++;
-			if (renderingDelay > 10) renderingDelay = 10;
-			std::cout << "!! Rendering Delay: " << renderingDelay << " frames !!" << std::endl;
+			//TODO
 		}
 	}
 	else htr_press = false;
@@ -753,9 +703,7 @@ protected:
 	if (Input::getHandTriggerL()) {
 		if (!htl_press) {
 			htl_press = true;
-			renderingDelay--;
-			if (renderingDelay < 0) renderingDelay = 0;
-			std::cout << "!! Rendering Delay: " << renderingDelay << " frames !!" << std::endl;
+			//TODO
 		}
 	}
 	else htl_press = false;
@@ -764,9 +712,7 @@ protected:
 	if (Input::getIndexTriggerR()) {
 		if (!itr_press) {
 			itr_press = true;
-			ringLag++;
-			if (ringLag >= 30) ringLag = 0;
-			std::cout << "!! Tracking Lag: " << ringLag << " frames !!" << std::endl;
+			//TODO
 		}
 	}
 	else itr_press = false;
@@ -775,9 +721,7 @@ protected:
 	if (Input::getIndexTriggerL()) {
 		if (!itl_press) {
 			itl_press = true;
-			ringLag--;
-			if (ringLag < 0) ringLag = 30 + ringLag;
-			std::cout << "!! Tracking Lag: " << ringLag << " frames !!" << std::endl;
+			//TODO
 		}
 	}
 	else itl_press = false;
@@ -786,23 +730,7 @@ protected:
 	if (Input::getButtonX()) {
 		if (!x_press) {
 			x_press = true;
-			switch (stereoMode) {
-			case STEREO_BOTH:	//Skybox and cubes are stereo
-				stereoMode = STEREO_SKY;
-				break;
-			case STEREO_SKY:	//Skybox is stereo
-				stereoMode = STEREO_ONESKY;
-				break;
-			case STEREO_ONESKY:	//Cubes are stereo
-				stereoMode = STEREO_CUSTOM_SKYBOX;
-				break;
-			case STEREO_CUSTOM_SKYBOX:	//Custom Skybox
-				stereoMode = STEREO_BOTH;
-				break;
-			default:
-				std::cerr << "====== Something went wrong with ButtonPressX ======" << std::endl;
-				break;
-			};
+			//TODO
 		}
 	}
 	else x_press = false;
@@ -810,7 +738,7 @@ protected:
 	if (Input::getButtonY()) {
 		if (!y_press) {
 			y_press = true;
-			renderCustomBoxes = !renderCustomBoxes;
+			//TODO
 		}
 	}
 	else y_press = false;
@@ -818,22 +746,7 @@ protected:
 	if (Input::getButtonB()) {
 		if (!b_press) {
 			b_press = true;
-			switch (trackingMode) {
-			case TRACKING_FULL:
-				trackingMode = TRACKING_ORIENTATION;
-				break;
-			case TRACKING_ORIENTATION:
-				trackingMode = TRACKING_POSITION;
-				break;
-			case TRACKING_POSITION:
-				trackingMode = TRACKING_NONE;
-				break;
-			case TRACKING_NONE:
-				trackingMode = TRACKING_FULL;
-				break;
-			default:
-				std::cerr << "====== Something went wrong with PressButtonB ======" << std::endl;
-			}
+			//TODO
 		}
 	}
 	else b_press = false;
@@ -841,26 +754,7 @@ protected:
 	if (Input::getButtonA()) {
 		if (!a_press) {
 			a_press = true;
-			switch (displayMode) {
-			case MODE_STEREO:
-				displayMode = MODE_MONO;
-				break;
-			case MODE_MONO:
-				displayMode = MODE_LEFT;
-				break;
-			case MODE_LEFT:
-				displayMode = MODE_RIGHT;
-				break;
-			case MODE_RIGHT:
-				displayMode = MODE_INVERTED;
-				break;
-			case MODE_INVERTED:
-				displayMode = MODE_STEREO;
-				break;
-			default:
-				std::cerr << "====== Something went wrong with ButtonPressA ======" << std::endl;
-				break;
-			}
+			//TODO
 		}
 	}
 	else a_press = false;
@@ -868,7 +762,7 @@ protected:
 	if (Input::getButtonStickL()) {
 		if (!ls_press) {
 			ls_press = true;
-			resetCubeScale();
+			//TODO
 		}
 	}
 	else ls_press = false;
@@ -876,136 +770,33 @@ protected:
 	if (Input::getButtonStickR()) {
 		if (!rs_press) {
 			rs_press = true;
-			iod = 0;
+			//TODO
 		}
 	}
 	else rs_press = false;
 
 	//==============================================================================UPDATE
-
-	//Render ring info
-	int renderIndex = ringIndex - ringLag;
-	if (renderIndex < 0) renderIndex = 30 + renderIndex;
-
-	//Send hands information to the project manager
-	ringBufferCL[ringIndex] = ovr::toGlm(handPoses[ovrHand_Left]);
-	ringBufferCR[ringIndex] = ovr::toGlm(handPoses[ovrHand_Right]);
-	
+	//Update hand positions
+	projectManager->updateHands(ovr::toGlm(handPoses[ovrHand_Left]), ovr::toGlm(handPoses[ovrHand_Right]));
 
 	//Calls update in children
 	projectManager->update(ovr_GetTimeInSeconds() - lastTime);
 	lastTime = ovr_GetTimeInSeconds();
 
-	//Rendering lag
-	if (renderingIndex < renderingDelay) { renderingIndex++; return; }
-	renderingIndex = 0;
-
 	//==============================================================================DRAW
-	ovr::for_each_eye([&](ovrEyeType eye){
-		//---------------------------------------------------Setups
+	ovr::for_each_eye([&](ovrEyeType eye) {
+		//---------------------------------------------------Setup
 		const auto& vp = _sceneLayer.Viewport[eye];
 		glViewport(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h);
-		_sceneLayer.RenderPose[eye] = eyePoses[eye];
-		//---------------------------------------------------IOD
-		ovrEyeRenderDesc& erd = _eyeRenderDescs[eye] = ovr_GetRenderDesc(_session, eye, _hmdDesc.DefaultEyeFov[eye]);
-		_viewScaleDesc.HmdToEyePose[eye] = erd.HmdToEyePose;
-
-		if (eye == 0)	_viewScaleDesc.HmdToEyePose[eye].Position.x -= iod;
-		else			_viewScaleDesc.HmdToEyePose[eye].Position.x += iod;
-		//---------------------------------------------------Display Mode
-		bool render = true;
-		short curEye = eye;
-		
-		switch (displayMode) {
-		case MODE_STEREO:		//3d stereo
-			curEye = eye;
-			break;
-		case MODE_MONO:			//Same image both eyes
-			curEye = 0;
-			break;
-		case MODE_LEFT:			//Render left eye, right eye black
-			if (eye == 1) render = false;
-			break;
-		case MODE_RIGHT:		//Render right eye, left eye black
-			if (eye == 0) render = false;
-			break;
-		case MODE_INVERTED:		//Render left in right, and right in left
-			renderIndex--; if (renderIndex < 0) renderIndex = 29;
-			if (eye == 0) { curEye = 1; }//  renderIndex--; if (renderIndex < 0) renderIndex = 29; }
-			else { curEye = 0; } //renderIndex++; if (renderIndex >= 30) renderIndex = 0; }
-			break;
-		default:
-			std::cerr << "====== Something went wrong with displayMode ======" << std::endl;
-			break;
-		}
-		//---------------------------------------------------Tracking Mode
-		glm::mat4 view = glm::mat4(1);
-
-		switch (trackingMode) {
-		case TRACKING_FULL:			//Full Tracking
-			view = glm::inverse(ovr::toGlm(eyePoses[curEye]));
-			break;
-		case TRACKING_ORIENTATION:	//Orientation Tracking
-			eyePoses[curEye].Position = lastPosition[curEye];
-			view = glm::inverse(ovr::toGlm(eyePoses[curEye]));
-			break;
-		case TRACKING_POSITION:		//Position Tracking
-			eyePoses[curEye].Orientation = lastRotation[curEye];
-			view = glm::inverse(ovr::toGlm(eyePoses[curEye]));
-			break;
-		case TRACKING_NONE:			//No Tracking
-			view = lastView[curEye];
-			break;
-		default:
-			std::cerr << "====== Something went wrong with trackingMode ======= " << std::endl;
-			break;
-		}
-		//---------------------------------------------------Ring Buffer
-		glm::mat4 curView;
-
-		if (eye == 0)	ringBufferL[ringIndex] = view;
-		else			ringBufferR[ringIndex] = view;
-
-		if (curEye == 0)	curView = ringBufferL[renderIndex]; 
-		else				curView = ringBufferR[renderIndex];
-
-		projectManager->updateHands(ringBufferCL[renderIndex], ringBufferCR[renderIndex]);
-
-		//---------------------------------------------------Stereo Mode
-		if (render) {
-			//PARAMETERS: projection, view, render in stereo, render cubes, render custom skybox, render custom boxes
-			switch (stereoMode) {
-			case STEREO_BOTH:	//Skybox and cubes are stereo
-				renderScene(_eyeProjections[curEye], curView, (curEye == 0), true, true, false, renderCustomBoxes);
-				break;
-			case STEREO_SKY:	//Skybox is stereo
-				renderScene(_eyeProjections[curEye], curView, (curEye == 0), false, true, false, renderCustomBoxes);
-				break;
-			case STEREO_ONESKY:	//Stereo but one skybox image
-				renderScene(_eyeProjections[curEye], curView, (curEye == 0), false, false, false, renderCustomBoxes);
-				break;
-			case STEREO_CUSTOM_SKYBOX:
-				renderScene(_eyeProjections[curEye], curView, (curEye == 0), false, false, true, renderCustomBoxes);
-				break;
-			default:
-				std::cerr << "====== Something went wrong in StereoMode ======" << std::endl;
-				break;
-			}
-
-			projectManager->draw(curView, _eyeProjections[curEye]);
-		}
+		_sceneLayer.RenderPose[eye] = eyePoses[eye]; 
+		//---------------------------------------------------View Matrix
+		glm::mat4 view = glm::inverse(ovr::toGlm(eyePoses[eye]));
+		glm::mat4 projection = _eyeProjections[eye];
+		//---------------------------------------------------Render Scene
+		projectManager->draw(view, projection, eye);
 		//---------------------------------------------------Store variables for next frame
-		lastView[curEye] = view;
-		lastPosition[curEye] = eyePoses[curEye].Position;
-		lastRotation[curEye] = eyePoses[curEye].Orientation;
-    });
-
-	//================================================================================= AFTER RENDERING
-	if(displayMode == MODE_INVERTED) renderIndex++; if (renderIndex >= 30) renderIndex = 0;
-
-	ringIndex++;
-	if (ringIndex >= 30) ringIndex = 0;
-
+		lastView[eye] = view;
+	});
 	//=================================================================================
 
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
@@ -1021,13 +812,7 @@ protected:
     glBlitFramebuffer(0, 0, _mirrorSize.x, _mirrorSize.y, 0, _mirrorSize.y, _mirrorSize.x, 0, GL_COLOR_BUFFER_BIT,
                       GL_NEAREST);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-	//Sleep(150);
   }
-
-	virtual void renderScene(const glm::mat4& projection, const glm::mat4& headPose, bool eye, bool box, bool stereoSky, bool customSkybox, bool customBox) = 0;
-	virtual void setCubeScale(float s) = 0;
-	virtual void resetCubeScale() = 0;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -1041,95 +826,10 @@ protected:
 #include "shader.h"
 #include "Cube.h"
 
-// a class for building and rendering cubes
-class Scene{
-  // Program
-  std::vector<glm::mat4> instance_positions;
-  GLuint instanceCount;
-  GLuint shaderID;
-
-  std::unique_ptr<TexturedCube> cube;
-  std::unique_ptr<TexturedCube> customCubeL;
-  std::unique_ptr<TexturedCube> customCubeR;
-
-  std::unique_ptr<Skybox> skyboxLeft;
-  std::unique_ptr<Skybox> skyboxRight;
-  std::unique_ptr<Skybox> skyboxCustom;
-
-  const unsigned int GRID_SIZE{5};
-
-public:
-	// Scale to 20cm: 200cm * 0.1
-	float scaleFactor = 0.1f;
-
-	Scene(){
-		// Create two cube
-		instance_positions.push_back(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -0.3)));
-		instance_positions.push_back(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -0.9)));
-
-		instanceCount = instance_positions.size();
-
-		// Shader Program 
-		shaderID = LoadShaders(SHADER_SKYBOX_VERTEX, SHADER_SKYBOX_FRAGMENT);
-
-		cube = std::make_unique<TexturedCube>(TEXTURE_CUBE_STEAM);
-		customCubeL = std::make_unique<TexturedCube>(TEXTURE_CUBE_LEFT);
-		customCubeR = std::make_unique<TexturedCube>(TEXTURE_CUBE_RIGHT);
-
-		// 10m wide sky box: size doesn't matter though
-		skyboxLeft = std::make_unique<Skybox>(TEXTURE_SKYBOX_LEFT);
-		skyboxRight = std::make_unique<Skybox>(TEXTURE_SKYBOX_RIGHT);
-		skyboxCustom = std::make_unique<Skybox>(TEXTURE_SKYBOX_CUSTOM);
-		skyboxLeft->toWorld = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f));
-		skyboxRight->toWorld = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f));
-		skyboxCustom->toWorld = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f));
-	}
-
-	void render(const glm::mat4& projection, const glm::mat4& view, bool custom = false, bool eye = false) {
-		// Render two custom cubes
-		if (custom) {
-			for (int i = 0; i < instanceCount; i++) {
-				//Render custom LEFT box
-				if (eye) {
-					customCubeL->toWorld = instance_positions[i] * glm::scale(glm::mat4(1.0f), glm::vec3(scaleFactor));
-					customCubeL->draw(shaderID, projection, view);
-				}
-				//Render custom RIGHT box
-				else {
-					customCubeR->toWorld = instance_positions[i] * glm::scale(glm::mat4(1.0f), glm::vec3(scaleFactor));
-					customCubeR->draw(shaderID, projection, view);
-				}
-			}
-		}
-		//Render project cubes
-		else {
-			for (int i = 0; i < instanceCount; i++) {
-				cube->toWorld = instance_positions[i] * glm::scale(glm::mat4(1.0f), glm::vec3(scaleFactor));
-				cube->draw(shaderID, projection, view);
-			}
-		}
-	}
-
-	void renderSkyboxLeft(const glm::mat4& projection, const glm::mat4& view) {
-		skyboxLeft->draw(shaderID, projection, view);
-	}
-
-	void renderSkyboxRight(const glm::mat4& projection, const glm::mat4& view) {
-		skyboxRight->draw(shaderID, projection, view);
-	}
-
-	void renderCustomSkybox(const glm::mat4& projection, const glm::mat4& view) {
-		skyboxCustom->draw(shaderID, projection, view);
-	}
-};
-
 // An example application that renders a simple cube
-class ExampleApp : public RiftApp{
-	std::shared_ptr<Scene> scene;
-
+class Project : public RiftApp{
 public:
-	ExampleApp(){
-	}
+	Project(){ }
 
 protected:
 	void initGl() override{
@@ -1137,57 +837,19 @@ protected:
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glEnable(GL_DEPTH_TEST);
 		ovr_RecenterTrackingOrigin(_session);
-		scene = std::shared_ptr<Scene>(new Scene());
 	}
 
-	void shutdownGl() override
-  {
-    scene.reset();
-  }
-
-	void renderScene(const glm::mat4& projection, const glm::mat4& headPose, bool eye, bool box, bool stereoSky, bool customSkybox, bool customBox) override {
-		//Render Box
-		if (box) {
-			if(customBox) scene->render(projection, headPose, true, eye);
-			else scene->render(projection, headPose);
-		}
-
-		//Renders custom skybox
-		if (customSkybox) scene->renderCustomSkybox(projection, headPose);
-		//Renders project skybox
-		else {
-			//Render Skybox in stereo (different image per eye)
-			if (stereoSky) {
-				if (eye) scene->renderSkyboxLeft(projection, headPose);
-				else scene->renderSkyboxRight(projection, headPose);
-			}
-			//Render Skybox in mono (same image per eye)
-			else scene->renderSkyboxLeft(projection, headPose);
-		}
-	}
-
-	void setCubeScale(float s) override {
-		scene->scaleFactor += s;
-
-		if (scene->scaleFactor <= 0.01f) scene->scaleFactor = 0.01f;
-		else if (scene->scaleFactor >= 0.5f) scene->scaleFactor = 0.5f;
-	}
-
-	void resetCubeScale() {
-		scene->scaleFactor = 0.1f;
-	}
+	void shutdownGl() override{ }
 };
 
 // Execute our example class
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv){
   int result = -1;
 
-  if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
-  {
+  if (!OVR_SUCCESS(ovr_Initialize(nullptr))){
     FAIL("Failed to initialize the Oculus SDK");
   }
-  result = ExampleApp().run();
+  result = Project().run();
 
   ovr_Shutdown();
   return result;
