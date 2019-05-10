@@ -138,6 +138,7 @@
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="Quad.cpp" />
     <ClCompile Include="TexturedCube.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="shader.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="TexturedCube.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>

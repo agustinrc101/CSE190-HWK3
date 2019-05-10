@@ -61,11 +61,9 @@ using glm::quat;
 
 #include <GL/glew.h>
 
-bool checkFramebufferStatus(GLenum target = GL_FRAMEBUFFER)
-{
+bool checkFramebufferStatus(GLenum target = GL_FRAMEBUFFER){
   GLuint status = glCheckFramebufferStatus(target);
-  switch (status)
-  {
+  switch (status){
   case GL_FRAMEBUFFER_COMPLETE:
     return true;
     break;
