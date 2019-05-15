@@ -11,7 +11,8 @@ public:
   TexturedCube(const std::string dir);
   ~TexturedCube();
 
-  void draw(unsigned int shader, const glm::mat4& p, const glm::mat4& v, glm::vec3 rgb = glm::vec3(1.0f));
+  void draw(unsigned int shader, const glm::mat4& p, const glm::mat4& v);
+  void draw(unsigned int shader, const glm::mat4& p, const glm::mat4& v, glm::vec3 rgb);
 
   // These variables are needed for the shader program
   unsigned int cubeMap;

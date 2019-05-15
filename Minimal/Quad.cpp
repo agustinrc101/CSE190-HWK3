@@ -21,6 +21,8 @@ void Quad::draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat
 	glm::mat4 m = M * toWorld;
 
 	glUseProgram(shader);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	glUniform1i(glGetUniformLocation(shader, "TexCoords"), 0);
 	glUniform3f(glGetUniformLocation(shader, "eye"), eye.x, eye.y, eye.z);
@@ -31,18 +33,18 @@ void Quad::draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat
 	glBindVertexArray(VAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
+	//glUniform1i(glGetUniformLocation(shader, "renderTexture"), 0);
 	glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(0);
-
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
 }
 
 void Quad::draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat4 M, glm::vec3 rgb) {
 	glm::mat4 m = M * toWorld;
 
 	glUseProgram(shader);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &projection[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &headPose[0][0]);

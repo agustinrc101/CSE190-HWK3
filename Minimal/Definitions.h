@@ -11,6 +11,8 @@
 #define SHADER_TEXTURE_FRAGMENT "./shaders/TextureShader.frag"
 #define SHADER_SKYBOX_VERTEX "./shaders/skybox.vert"
 #define SHADER_SKYBOX_FRAGMENT "./shaders/skybox.frag"
+#define SHADER_RENDERED_TEXTURE_VERTEX "./shaders/RenderedTextureShader.vert"
+#define SHADER_RENDERED_TEXTURE_FRAGMENT "./shaders/RenderedTextureShader.frag"
 
 //Textures
 #define TEXTURE_SKYBOX_LEFT "skybox/left"
@@ -32,6 +34,9 @@
 #define COLOR_CYAN 0, 1, 1
 #define COLOR_BLACK 0, 0, 0
 #define COLOR_WHITE .8f, .8f, .8f
+
+//Variables
+#define MATH_PI 3.1415926535897932384626433832795f
 
 //Enums
 

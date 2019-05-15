@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cave.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -148,12 +149,15 @@
     <None Include="shader.vert" />
     <None Include="shaders\color.frag" />
     <None Include="shaders\color.vert" />
+    <None Include="shaders\RenderedTextureShader.frag" />
+    <None Include="shaders\RenderedTextureShader.vert" />
     <None Include="shaders\TextureShader.frag" />
     <None Include="shaders\TextureShader.vert" />
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cave.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Definitions.h" />

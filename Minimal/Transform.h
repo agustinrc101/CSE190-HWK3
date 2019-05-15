@@ -21,6 +21,7 @@ public:
 	void setShader(GLuint s) { shader = s; }
 	void setModel(Model * m) { model = m; }
 	void setToWorld(glm::mat4 w) { toWorld = w; }
+	void setPosition(glm::vec3 p) { toWorld[3] = glm::vec4(p, 1.0f); }
 
 	//transform
 	void scale(float s) { toWorld = glm::scale(toWorld, glm::vec3(s, s, s)); }

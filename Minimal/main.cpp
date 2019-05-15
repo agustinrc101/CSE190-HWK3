@@ -163,6 +163,7 @@ void glDebugCallbackHandler(GLenum source, GLenum type, GLuint id, GLenum severi
 #include "Definitions.h"
 #include "Input.h"
 #include "ObjectManager.h"
+#include "Cave.h"
 
 //init controller
 bool Input::indexTriggerL = false;
@@ -205,6 +206,7 @@ protected:
   
   //project vars
   ObjectManager * projectManager;
+  Cave * cave;
 
   //toggles
   bool a_press = false;
@@ -237,6 +239,7 @@ public:
     }
     glfwTerminate();
 	delete(projectManager);
+	delete(cave);
   }
 
   virtual int run(){
@@ -254,6 +257,7 @@ public:
 
     initGl();
 	projectManager = new ObjectManager();
+	cave = new Cave();
 
     while (!glfwWindowShouldClose(window)){
       ++frame;
@@ -779,6 +783,7 @@ protected:
 
 	//Calls update in children
 	projectManager->update(ovr_GetTimeInSeconds() - lastTime);
+	cave->update(ovr_GetTimeInSeconds() - lastTime);
 	lastTime = ovr_GetTimeInSeconds();
 
 	//==============================================================================DRAW
@@ -790,8 +795,12 @@ protected:
 		//---------------------------------------------------View Matrix
 		glm::mat4 view = glm::inverse(ovr::toGlm(eyePoses[eye]));
 		glm::mat4 projection = _eyeProjections[eye];
+		//---------------------------------------------------Cave Vars
+		cave->setEyePos(ovr::toGlm(eyePoses[eye].Position), eye);
+		cave->setViewport(glm::vec4(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h), eye);
 		//---------------------------------------------------Render Scene
 		projectManager->draw(view, projection, eye);
+		cave->draw(view, projection, eye);
 		//---------------------------------------------------Store variables for next frame
 		lastView[eye] = view;
 	});

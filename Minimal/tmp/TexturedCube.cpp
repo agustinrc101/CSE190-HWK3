@@ -108,19 +108,32 @@ TexturedCube::~TexturedCube()
   glDeleteTextures(1, &cubeMap);
 }
 
-void TexturedCube::draw(unsigned shader, const glm::mat4& p, const glm::mat4& v, glm::vec3 rgb){
-  glUseProgram(shader);
+void TexturedCube::draw(unsigned shader, const glm::mat4& p, const glm::mat4& v){
+	glUseProgram(shader);
+	// Now send these values to the shader program
+	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &p[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &v[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &toWorld[0][0]);
 
-  // send these values to the shader program
-  glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &p[0][0]);
-  glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &v[0][0]);
-  glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &toWorld[0][0]);
-  glUniform3f(glGetUniformLocation(shader, "rgb"), rgb.r, rgb.g, rgb.b);
-
-  glBindVertexArray(VAO);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
-  glUniform1i(glGetUniformLocation(shader, "skybox"), 0);
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-  glBindVertexArray(0);
+	glBindVertexArray(VAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, cubeMap);
+	glUniform1i(glGetUniformLocation(shader, "texture"), 0);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
 }
+
+void TexturedCube::draw(unsigned shader, const glm::mat4& p, const glm::mat4& v, glm::vec3 rgb){
+	glUseProgram(shader);
+	// Now send these values to the shader program
+	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &p[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &v[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &toWorld[0][0]);
+	glUniform3f(glGetUniformLocation(shader, "rgb"), rgb.x, rgb.y, rgb.z);
+
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+}
+
+

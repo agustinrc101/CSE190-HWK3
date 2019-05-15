@@ -4,8 +4,7 @@
 #include <string>
 #include "TexturedCube.h"
 
-class Skybox : public TexturedCube
-{
+class Skybox : public TexturedCube{
 public:
 
   Skybox(const std::string dir);
