@@ -24,7 +24,7 @@ void main(){
 	if(angle < 0.0)
 		angle = 360 + angle;
 
-	angle = mod(angle, 91.0);
+	angle = mod(angle, 90.0);
 
 	//Calculate brightness
 	brightness = 1.0 - (angle / 90.0);
