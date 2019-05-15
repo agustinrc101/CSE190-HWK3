@@ -42,7 +42,7 @@
     <ClCompile Include="Cave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Cube.cpp">
+    <ClCompile Include="Lines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -66,6 +66,8 @@
     </None>
     <None Include="shaders\RenderedTextureShader.frag" />
     <None Include="shaders\RenderedTextureShader.vert" />
+    <None Include="shaders\LCDisplayShader.vert" />
+    <None Include="shaders\LCDisplayShader.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -107,7 +109,10 @@
     <ClInclude Include="Cave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cube.h">
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,14 +13,16 @@
 #define SHADER_SKYBOX_FRAGMENT "./shaders/skybox.frag"
 #define SHADER_RENDERED_TEXTURE_VERTEX "./shaders/RenderedTextureShader.vert"
 #define SHADER_RENDERED_TEXTURE_FRAGMENT "./shaders/RenderedTextureShader.frag"
+#define SHADER_LCDISPLAY_VERTEX "./shaders/LCDisplayShader.vert"
+#define SHADER_LCDISPLAY_FRAGMENT "./shaders/LCDisplayShader.frag"
 
 //Textures
 #define TEXTURE_SKYBOX_LEFT "skybox/left"
 #define TEXTURE_SKYBOX_RIGHT "skybox/right"
 #define TEXTURE_SKYBOX_CUSTOM "skybox/custom"
-#define TEXTURE_CUBE_STEAM "textures/steam"
-#define TEXTURE_CUBE_LEFT "textures/left"
-#define TEXTURE_CUBE_RIGHT "textures/right"
+#define TEXTURE_CUBE_STEAM "textures/steam/albedo.ppm"
+#define TEXTURE_CUBE_LEFT "textures/left/albedo.ppm"
+#define TEXTURE_CUBE_RIGHT "textures/right/albedo.ppm"
 
 //Models
 #define MODEL_SPHERE "models/sphere.obj"

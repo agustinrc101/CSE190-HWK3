@@ -1,20 +1,41 @@
-﻿#ifndef TEXTUREDCUBE_H
+#pragma once
+
+#ifndef TEXTUREDCUBE_H
 #define TEXTUREDCUBE_H
 
-#include "Cube.h"
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <iostream>
 #include <string>
+#include <vector>
 
-class TexturedCube : public Cube
-{
+class TexturedCube{
 public:
+	TexturedCube(const char * tex);
+	~TexturedCube();
 
-  TexturedCube(const std::string dir);
-  ~TexturedCube();
+	glm::mat4 toWorld;
 
-  void draw(unsigned int shader, const glm::mat4& p, const glm::mat4& v, glm::vec3 rgb = glm::vec3(1.0f));
+	void draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat4 M);
+	void update();
 
-  // These variables are needed for the shader program
-  unsigned int cubeMap;
-  unsigned int uProjection, uView;
+	void setPosition(glm::vec3 pos);
+	void setScale(float scale);
+
+private:
+	std::vector<GLuint> indices;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> texCoords;
+
+	GLuint VBO, VAO, EBO, TEX, VBO2;
+
+	void initCube(float size);
+	void initBuffers();
+	void initTextures(const char * tex);
 };
-#endif
+
+#endif //TEXTURECUBE_H

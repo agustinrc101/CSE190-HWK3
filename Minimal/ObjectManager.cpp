@@ -11,6 +11,7 @@ GLint Shaders::colorShader = 0;
 GLint Shaders::textureShader = 0;
 GLint Shaders::skyboxShader = 0;
 GLint Shaders::renderedTextureShader = 0;
+GLint Shaders::LCDisplayShader = 0;
 //Declare Models
 Model * sphere;
 //Declare Objects
@@ -36,10 +37,12 @@ ObjectManager::ObjectManager() {
 }
 
 void ObjectManager::initShaders() {
+
 	Shaders::setColorShader(LoadShaders(SHADER_COLOR_VERTEX, SHADER_COLOR_FRAGMENT));
 	Shaders::setTextureShader(LoadShaders(SHADER_TEXTURE_VERTEX, SHADER_TEXTURE_FRAGMENT));
 	Shaders::setSkyboxShader(LoadShaders(SHADER_SKYBOX_VERTEX, SHADER_SKYBOX_FRAGMENT));
 	Shaders::setRenderedTextureShader(LoadShaders(SHADER_RENDERED_TEXTURE_VERTEX, SHADER_RENDERED_TEXTURE_FRAGMENT));
+	Shaders::setLCDisplayShader(LoadShaders(SHADER_LCDISPLAY_VERTEX, SHADER_LCDISPLAY_FRAGMENT));
 }
 
 void ObjectManager::initModels() {
@@ -53,12 +56,12 @@ void ObjectManager::initObjects() {
 }
 
 void ObjectManager::initValues() {
-	skyboxCustom->toWorld = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f));
+
 }
 
 void ObjectManager::draw(glm::mat4 headPose, glm::mat4 projection, int eye) {
 	//Draw skybox skybox
-	skyboxCustom->draw(Shaders::getSkyboxShader(), projection, headPose);
+	skyboxCustom->draw(projection, headPose, Shaders::getSkyboxShader());
 	//Draw hands
 	handL->draw(headPose, projection);
 	handR->draw(headPose, projection);

@@ -10,16 +10,16 @@ public:
 	~Cave();
 
 	void draw(glm::mat4 headPose, glm::mat4 projection, int eye);
+	void drawDebugLines(glm::mat4 headPose, glm::mat4 projection, glm::vec3 eyepos, int eye);
 	void update(double deltaTime);
 
 	//Setters
 	void setEyePos(glm::vec3 pos, int eye) { eyePos[eye] = pos; }
 	void setViewport(glm::vec4 vp, int eye) { viewport[eye] = vp; }
-	void setCubeScale(float s); 
+	void setCubeScale(float s);
+	void resetCubeScale();
 	void moveCube(glm::vec3 t);
-
-	//Getters
-	glm::vec3 getCorners(int index);
+	void resetCubePosition();
 
 private:
 	glm::mat4 toWorld = glm::mat4(1.0f);
@@ -28,8 +28,9 @@ private:
 	glm::vec4 viewport[2] = { glm::vec4(1.0f), glm::vec4(1.0f) };
 
 	void initPlanes();
-	void initSkybox();
 	void initCorners();
+	void initLines();
+	void initSkybox();
 	void initObjects();
 	void initFrameBuffer();
 	void initRenderedTexture();
@@ -37,6 +38,7 @@ private:
 
 	void doFrameBuffer(glm::mat4 projection, int eye);
 	glm::mat4 generateProjection(int eye, int plane);
+	glm::vec3 getDisplayNormal(int plane);
 };
 
 #endif

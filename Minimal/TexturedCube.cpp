@@ -1,126 +1,180 @@
-﻿#include "TexturedCube.h"
-#include <GL/glew.h>
-#include <iostream>
-#include <vector>
+#include "TexturedCube.h"
 
-unsigned char* loadPPM(const char* filename, int& width, int& height)
-{
-  const int BUFSIZE = 128;
-  FILE* fp;
-  unsigned int read;
-  unsigned char* rawData;
-  char buf[3][BUFSIZE];
-  char* retval_fgets;
-  size_t retval_sscanf;
+#include "LoadPPM.h"
 
-  if ((fp = fopen(filename, "rb")) == NULL)
-  {
-    std::cerr << "error reading ppm file, could not locate " << filename << std::endl;
-    width = 0;
-    height = 0;
-    return NULL;
-  }
-
-  // Read magic number:
-  retval_fgets = fgets(buf[0], BUFSIZE, fp);
-
-  // Read width and height:
-  do
-  {
-    retval_fgets = fgets(buf[0], BUFSIZE, fp);
-  }
-  while (buf[0][0] == '#');
-  retval_sscanf = sscanf(buf[0], "%s %s", buf[1], buf[2]);
-  width = atoi(buf[1]);
-  height = atoi(buf[2]);
-
-  // Read maxval:
-  do
-  {
-    retval_fgets = fgets(buf[0], BUFSIZE, fp);
-  }
-  while (buf[0][0] == '#');
-
-  // Read image data:
-  rawData = new unsigned char[width * height * 3];
-  read = fread(rawData, width * height * 3, 1, fp);
-  fclose(fp);
-  if (read != 1)
-  {
-    std::cerr << "error parsing ppm file, incomplete data" << std::endl;
-    delete[] rawData;
-    width = 0;
-    height = 0;
-    return NULL;
-  }
-
-  return rawData;
+TexturedCube::TexturedCube(const char * tex){
+	this->toWorld = glm::mat4(1.0f);
+	initCube(1);
+	initBuffers();
+	initTextures(tex);
 }
 
-unsigned loadCubemap(const std::string directory, std::vector<std::string>& faces)
-{
-  unsigned int textureID;
-  glGenTextures(1, &textureID);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+TexturedCube::~TexturedCube(){
+	indices.clear();
+	vertices.clear();
+	texCoords.clear();
 
-  int width, height;
-  for (unsigned int i = 0; i < faces.size(); i++)
-  {
-    std::string path = directory + faces[i];
-    unsigned char* data = loadPPM(path.c_str(), width, height);
-    if (data)
-    {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                   0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-      );
-    }
-    else
-    {
-      std::cout << "Cubemap texture failed to load at path: " << faces[i].c_str() << std::endl;
-    }
-  }
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-  return textureID;
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+	glDeleteBuffers(1, &VBO2);
+	glDeleteTextures(1, &TEX);
 }
 
-std::vector<std::string> faces
-{
-  "left.ppm",
-  "right.ppm",
-  "up.ppm",
-  "down.ppm",
-  "back.ppm",
-  "front.ppm"
-};
-
-TexturedCube::TexturedCube(const std::string dir) : Cube()
-{
-  cubeMap = loadCubemap("./" + dir + "/", faces);
+void TexturedCube::setPosition(glm::vec3 pos) {
+	toWorld[3] = glm::vec4(pos.x, pos.y, pos.z, 1);
 }
 
-TexturedCube::~TexturedCube()
-{
-  glDeleteTextures(1, &cubeMap);
+void TexturedCube::setScale(float scale) {
+	glm::vec4 pos = toWorld[3];
+	toWorld = glm::mat4(1.0f);
+	toWorld[3] = pos;
+	toWorld = glm::scale(toWorld, glm::vec3(scale, scale, scale));
 }
 
-void TexturedCube::draw(unsigned shader, const glm::mat4& p, const glm::mat4& v, glm::vec3 rgb){
-  glUseProgram(shader);
+void TexturedCube::draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat4 M){
+	glm::mat4 m = M * toWorld;
 
-  // send these values to the shader program
-  glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &p[0][0]);
-  glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &v[0][0]);
-  glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &toWorld[0][0]);
-  glUniform3f(glGetUniformLocation(shader, "rgb"), rgb.r, rgb.g, rgb.b);
+	glUseProgram(shader);
 
-  glBindVertexArray(VAO);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
-  glUniform1i(glGetUniformLocation(shader, "skybox"), 0);
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-  glBindVertexArray(0);
+	glUniform1i(glGetUniformLocation(shader, "TexCoords"), 0);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &projection[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &headPose[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &m[0][0]);
+
+	glBindVertexArray(VAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TEX);
+	glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
+	
+
+	glBindVertexArray(0);
+}
+
+void TexturedCube::update() {
+
+}
+
+void TexturedCube::initCube(float size) {
+	float half = size / 2.0f;
+
+	//Vertices
+		//front
+	vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
+	vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
+	vertices.push_back(glm::vec3(half, half, half));	//right, top, front
+	vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
+		//back
+	vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
+	vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
+	vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
+	vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
+		//left
+	vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
+	vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
+	vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
+	vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
+		//right
+	vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
+	vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
+	vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
+	vertices.push_back(glm::vec3(half, half, half));	//right, top, front
+		//top
+	vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
+	vertices.push_back(glm::vec3(half, half, half));	//right, top, front
+	vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
+	vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
+		//bottom
+	vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
+	vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
+	vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
+	vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
+
+
+	//indices
+		//front
+	indices.push_back(0); indices.push_back(1); indices.push_back(2);
+	indices.push_back(0); indices.push_back(2); indices.push_back(3);
+		//back
+	indices.push_back(4); indices.push_back(5); indices.push_back(6);
+	indices.push_back(4); indices.push_back(6); indices.push_back(7);
+		//left
+	indices.push_back(8); indices.push_back(9); indices.push_back(10);
+	indices.push_back(8); indices.push_back(10); indices.push_back(11);
+		//right
+	indices.push_back(12); indices.push_back(13); indices.push_back(14);
+	indices.push_back(12); indices.push_back(14); indices.push_back(15);
+		//top
+	indices.push_back(16); indices.push_back(17); indices.push_back(18);
+	indices.push_back(16); indices.push_back(18); indices.push_back(19);
+		//bottom
+	indices.push_back(20); indices.push_back(23); indices.push_back(22);
+	indices.push_back(20); indices.push_back(22); indices.push_back(21);
+
+	//Tex Coords
+	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Front
+	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Back
+	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Left
+	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Right
+	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Top
+	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(0, 0)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(1, 1));//Bottom
+}
+
+void TexturedCube::initBuffers() {
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+	glGenBuffers(1, &VBO2);
+
+	//passes vertices
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &(vertices[0]), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+
+	//passes indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+
+	// passes texture coords
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(glm::vec2), &(texCoords[0]), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (GLvoid*)0);
+	
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void TexturedCube::initTextures(const char * texPath) {
+	int width = 0;
+	int height = 0;
+	int nrcChannels = 0;
+	unsigned char * ppm = loadPPM(texPath, width, height);
+	
+	glGenTextures(1, &TEX);	
+	glBindTexture(GL_TEXTURE_2D, TEX);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height,
+		0, GL_RGB, GL_UNSIGNED_BYTE, &ppm[0]);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	GLfloat fLargest;
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
+
+	delete(ppm);
 }

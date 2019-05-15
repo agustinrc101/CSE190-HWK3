@@ -133,7 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cave.cpp" />
-    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Lines.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
@@ -149,6 +149,8 @@
     <None Include="shader.vert" />
     <None Include="shaders\color.frag" />
     <None Include="shaders\color.vert" />
+    <None Include="shaders\LCDisplayShader.frag" />
+    <None Include="shaders\LCDisplayShader.vert" />
     <None Include="shaders\RenderedTextureShader.frag" />
     <None Include="shaders\RenderedTextureShader.vert" />
     <None Include="shaders\TextureShader.frag" />
@@ -159,9 +161,9 @@
   <ItemGroup>
     <ClInclude Include="Cave.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="Cube.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Lines.h" />
     <ClInclude Include="LoadPPM.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ObjectManager.h" />
@@ -169,6 +171,7 @@
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Quad.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="TexturedCube.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>

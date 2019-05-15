@@ -21,6 +21,7 @@ public:
 
 	void draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat4 M, GLuint texture, glm::vec3 eye);
 	void draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat4 M, glm::vec3 rgb);
+	void draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat4 M, GLuint texture, glm::vec3 normal, glm::vec3 eyepos);
 	void update();
 
 private:
