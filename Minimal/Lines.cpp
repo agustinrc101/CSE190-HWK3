@@ -16,6 +16,32 @@ Lines::~Lines(){
 }
 
 void Lines::draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::mat4 M, glm::vec3 rgb) {
+	//Rebind buffers
+	bindBuffers();
+
+	//Begin draw
+	glm::mat4 m = M * toWorld;
+
+	glUseProgram(shader);
+
+	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &projection[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &headPose[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &m[0][0]);
+	glUniform3f(glGetUniformLocation(shader, "rgb"), rgb.x, rgb.y, rgb.z);
+
+	glBindVertexArray(VAO);
+	glDrawElements(GL_LINE_STRIP, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+	glDeleteBuffers(1, &VBO2);
+}
+
+void Lines::bindBuffers(){
+	//Rebind buffers
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -35,26 +61,6 @@ void Lines::draw(glm::mat4 projection, glm::mat4 headPose, GLint shader, glm::ma
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-	
-	//BEGIN DRAW
-	glm::mat4 m = M * toWorld;
-
-	glUseProgram(shader);
-
-	glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, &projection[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &headPose[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, &m[0][0]);
-	glUniform3f(glGetUniformLocation(shader, "rgb"), rgb.x, rgb.y, rgb.z);
-
-	glBindVertexArray(VAO);
-	glDrawElements(GL_LINE_STRIP, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
-
-	glBindVertexArray(0);
-
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glDeleteBuffers(1, &VBO2);
 }
 
 void Lines::updateEyePos(glm::vec3 pos) {

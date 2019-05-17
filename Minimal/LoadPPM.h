@@ -1,4 +1,6 @@
 #pragma once
+#ifndef LOADPPM_H
+#define LOADPPM_H
 
 #include <iostream>
 #include <stdio.h>
@@ -58,3 +60,5 @@ unsigned char* loadPPM(const char* filename, int& width, int& height) {
 
 	return rawData;
 }
+
+#endif

@@ -1,5 +1,4 @@
 #include "TexturedCube.h"
-
 #include "LoadPPM.h"
 
 TexturedCube::TexturedCube(const char * tex){
@@ -59,74 +58,104 @@ void TexturedCube::initCube(float size) {
 	float half = size / 2.0f;
 
 	//Vertices
+	{
 		//front
-	vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
-	vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
-	vertices.push_back(glm::vec3(half, half, half));	//right, top, front
-	vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
+		vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
+		vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
+		vertices.push_back(glm::vec3(half, half, half));	//right, top, front
+		vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
 		//back
-	vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
-	vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
-	vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
-	vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
+		vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
+		vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
+		vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
+		vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
 		//left
-	vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
-	vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
-	vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
-	vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
+		vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
+		vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
+		vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
+		vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
 		//right
-	vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
-	vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
-	vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
-	vertices.push_back(glm::vec3(half, half, half));	//right, top, front
+		vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
+		vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
+		vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
+		vertices.push_back(glm::vec3(half, half, half));	//right, top, front
 		//top
-	vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
-	vertices.push_back(glm::vec3(half, half, half));	//right, top, front
-	vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
-	vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
+		vertices.push_back(glm::vec3(-half, half, half));	//left, top, front
+		vertices.push_back(glm::vec3(half, half, half));	//right, top, front
+		vertices.push_back(glm::vec3(half, half, -half));	//right, top, back
+		vertices.push_back(glm::vec3(-half, half, -half));	//left, top, back
 		//bottom
-	vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
-	vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
-	vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
-	vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
-
+		vertices.push_back(glm::vec3(-half, -half, half));	//left, down, front
+		vertices.push_back(glm::vec3(half, -half, half));	//right, down, front
+		vertices.push_back(glm::vec3(half, -half, -half));	//right, down, back
+		vertices.push_back(glm::vec3(-half, -half, -half));	//left, down, back
+	}
 
 	//indices
+	{
 		//front
-	indices.push_back(0); indices.push_back(1); indices.push_back(2);
-	indices.push_back(0); indices.push_back(2); indices.push_back(3);
+		indices.push_back(0); indices.push_back(1); indices.push_back(2);
+		indices.push_back(0); indices.push_back(2); indices.push_back(3);
 		//back
-	indices.push_back(4); indices.push_back(5); indices.push_back(6);
-	indices.push_back(4); indices.push_back(6); indices.push_back(7);
+		indices.push_back(4); indices.push_back(5); indices.push_back(6);
+		indices.push_back(4); indices.push_back(6); indices.push_back(7);
 		//left
-	indices.push_back(8); indices.push_back(9); indices.push_back(10);
-	indices.push_back(8); indices.push_back(10); indices.push_back(11);
+		indices.push_back(8); indices.push_back(9); indices.push_back(10);
+		indices.push_back(8); indices.push_back(10); indices.push_back(11);
 		//right
-	indices.push_back(12); indices.push_back(13); indices.push_back(14);
-	indices.push_back(12); indices.push_back(14); indices.push_back(15);
+		indices.push_back(12); indices.push_back(13); indices.push_back(14);
+		indices.push_back(12); indices.push_back(14); indices.push_back(15);
 		//top
-	indices.push_back(16); indices.push_back(17); indices.push_back(18);
-	indices.push_back(16); indices.push_back(18); indices.push_back(19);
+		indices.push_back(16); indices.push_back(17); indices.push_back(18);
+		indices.push_back(16); indices.push_back(18); indices.push_back(19);
 		//bottom
-	indices.push_back(20); indices.push_back(23); indices.push_back(22);
-	indices.push_back(20); indices.push_back(22); indices.push_back(21);
+		indices.push_back(20); indices.push_back(23); indices.push_back(22);
+		indices.push_back(20); indices.push_back(22); indices.push_back(21);
+	}
 
 	//Tex Coords
-	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Front
-	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Back
-	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Left
-	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Right
-	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(1, 1)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(0, 0));//Top
-	texCoords.push_back(glm::vec2(0, 1)); texCoords.push_back(glm::vec2(0, 0)); texCoords.push_back(glm::vec2(1, 0)); texCoords.push_back(glm::vec2(1, 1));//Bottom
+	{
+		//Front
+		texCoords.push_back(glm::vec2(0, 1)); 
+		texCoords.push_back(glm::vec2(1, 1)); 
+		texCoords.push_back(glm::vec2(1, 0)); 
+		texCoords.push_back(glm::vec2(0, 0));
+		//Back
+		texCoords.push_back(glm::vec2(0, 1)); 
+		texCoords.push_back(glm::vec2(1, 1)); 
+		texCoords.push_back(glm::vec2(1, 0)); 
+		texCoords.push_back(glm::vec2(0, 0));
+		//Left
+		texCoords.push_back(glm::vec2(0, 1)); 
+		texCoords.push_back(glm::vec2(1, 1)); 
+		texCoords.push_back(glm::vec2(1, 0)); 
+		texCoords.push_back(glm::vec2(0, 0));
+		//Right
+		texCoords.push_back(glm::vec2(0, 1)); 
+		texCoords.push_back(glm::vec2(1, 1));
+		texCoords.push_back(glm::vec2(1, 0)); 
+		texCoords.push_back(glm::vec2(0, 0));
+		//Top
+		texCoords.push_back(glm::vec2(0, 1)); 
+		texCoords.push_back(glm::vec2(1, 1)); 
+		texCoords.push_back(glm::vec2(1, 0)); 
+		texCoords.push_back(glm::vec2(0, 0));
+		//Bottom
+		texCoords.push_back(glm::vec2(0, 1)); 
+		texCoords.push_back(glm::vec2(0, 0)); 
+		texCoords.push_back(glm::vec2(1, 0)); 
+		texCoords.push_back(glm::vec2(1, 1));
+	}
 }
 
 void TexturedCube::initBuffers() {
+	//Begin
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 	glGenBuffers(1, &VBO2);
 
-	//passes vertices
+	//Pass vertices
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &(vertices[0]), GL_STATIC_DRAW);
@@ -134,21 +163,21 @@ void TexturedCube::initBuffers() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
-	//passes indices
+	//Pass indices
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
-	// passes texture coords
+	//Pass texture coords
 	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
 	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(glm::vec2), &(texCoords[0]), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (GLvoid*)0);
 	
-
+	//Finish
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
