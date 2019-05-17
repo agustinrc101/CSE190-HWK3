@@ -665,169 +665,174 @@ protected:
 		handPosition[1] = handPoses[1].Position;
 
 		//=============================================================================BUTTON PRESSES
-		ovrInputState inputState;
+		{
+			ovrInputState inputState;
 
-		if (OVR_SUCCESS(ovr_GetInputState(_session, ovrControllerType_Touch, &inputState))) {
-			//Index Trigger
-			Input::setIndexTriggerL((inputState.IndexTrigger[ovrHand_Left] > 0.5f));
-			Input::setIndexTriggerR((inputState.IndexTrigger[ovrHand_Right] > 0.5f));
+			if (OVR_SUCCESS(ovr_GetInputState(_session, ovrControllerType_Touch, &inputState))) {
+				//Index Trigger
+				Input::setIndexTriggerL((inputState.IndexTrigger[ovrHand_Left] > 0.5f));
+				Input::setIndexTriggerR((inputState.IndexTrigger[ovrHand_Right] > 0.5f));
 
-			//Hand Trigger
-			Input::setHandTriggerL((inputState.HandTrigger[ovrHand_Left] > 0.5f));
-			Input::setHandTriggerR((inputState.HandTrigger[ovrHand_Right] > 0.5f));
+				//Hand Trigger
+				Input::setHandTriggerL((inputState.HandTrigger[ovrHand_Left] > 0.5f));
+				Input::setHandTriggerR((inputState.HandTrigger[ovrHand_Right] > 0.5f));
 
-			//Buttons
-			Input::setButtonA(inputState.Buttons & ovrButton_A);
-			Input::setButtonB(inputState.Buttons & ovrButton_B);
-			Input::setButtonX(inputState.Buttons & ovrButton_X);
-			Input::setButtonY(inputState.Buttons & ovrButton_Y);
+				//Buttons
+				Input::setButtonA(inputState.Buttons & ovrButton_A);
+				Input::setButtonB(inputState.Buttons & ovrButton_B);
+				Input::setButtonX(inputState.Buttons & ovrButton_X);
+				Input::setButtonY(inputState.Buttons & ovrButton_Y);
 
-			//Sticks
-			Input::setStickL(ovr::toGlm(inputState.Thumbstick[0]));
-			Input::setStickR(ovr::toGlm(inputState.Thumbstick[1]));
-			Input::setButtonStickL(inputState.Buttons & ovrButton_LThumb);
-			Input::setButtonStickR(inputState.Buttons & ovrButton_RThumb);
+				//Sticks
+				Input::setStickL(ovr::toGlm(inputState.Thumbstick[0]));
+				Input::setStickR(ovr::toGlm(inputState.Thumbstick[1]));
+				Input::setButtonStickL(inputState.Buttons & ovrButton_LThumb);
+				Input::setButtonStickR(inputState.Buttons & ovrButton_RThumb);
+			}
 		}
-
 		//==============================================================================CONTROLLER BUTTON HANDLING
-		//Left Stick
-		cave->moveCube(glm::vec3(Input::getStickL().x, 0, Input::getStickL().y));
-		//Right Stick
-		cave->moveCube(glm::vec3(0, Input::getStickR().y, 0));
-		cave->setCubeScale(Input::getStickR().x);
-		//Hand Trigger - Right
-		if (Input::getHandTriggerR()) {
-			if (!htr_press) {
-				htr_press = true;
-				//TODO
+		{
+			//Left Stick
+			cave->moveCube(glm::vec3(Input::getStickL().x, 0, Input::getStickL().y));
+			//Right Stick
+			cave->moveCube(glm::vec3(0, Input::getStickR().y, 0));
+			cave->setCubeScale(Input::getStickR().x);
+			//Hand Trigger - Right
+			if (Input::getHandTriggerR()) {
+				if (!htr_press) {
+					htr_press = true;
+					//TODO
+				}
 			}
-		}
-		else htr_press = false;
+			else htr_press = false;
 
-		//Hand Trigger - Left
-		if (Input::getHandTriggerL()) {
-			if (!htl_press) {
-				htl_press = true;
-				//TODO
+			//Hand Trigger - Left
+			if (Input::getHandTriggerL()) {
+				if (!htl_press) {
+					htl_press = true;
+					//TODO
+				}
 			}
-		}
-		else htl_press = false;
+			else htl_press = false;
 
-		//Index Trigger - Right
-		if (Input::getIndexTriggerR()) {
-			if (!itr_press) {
-				itr_press = true;
-				//TODO
+			//Index Trigger - Right
+			if (Input::getIndexTriggerR()) {
+				if (!itr_press) {
+					itr_press = true;
+					//TODO
+				}
 			}
-		}
-		else itr_press = false;
+			else itr_press = false;
 
-		//Index Trigger - Left
-		if (Input::getIndexTriggerL()) {
-			if (!itl_press) {
-				itl_press = true;
-				//TODO
+			//Index Trigger - Left
+			if (Input::getIndexTriggerL()) {
+				if (!itl_press) {
+					itl_press = true;
+					//TODO
+				}
 			}
-		}
-		else itl_press = false;
+			else itl_press = false;
 
-		//Button X
-		if (Input::getButtonX()) {
-			if (!x_press) {
-				x_press = true;
-				cave->toggleLCD();
+			//Button X
+			if (Input::getButtonX()) {
+				if (!x_press) {
+					x_press = true;
+					cave->toggleLCD();
+				}
 			}
-		}
-		else x_press = false;
-		//Button Y
-		if (Input::getButtonY()) {
-			if (!y_press) {
-				y_press = true;
-				//TODO
+			else x_press = false;
+			//Button Y
+			if (Input::getButtonY()) {
+				if (!y_press) {
+					y_press = true;
+					//TODO
+				}
 			}
-		}
-		else y_press = false;
-		//Button B
-		if (Input::getButtonB()) {
-			if (!b_press) {
-				b_press = true;
-				freezeCave = !freezeCave;
+			else y_press = false;
+			//Button B
+			if (Input::getButtonB()) {
+				if (!b_press) {
+					b_press = true;
+					freezeCave = !freezeCave;
+				}
 			}
-		}
-		else b_press = false;
-		//Button A
-		if (Input::getButtonA()) {
-			if (!a_press) {
-				a_press = true;
-				//TODO
+			else b_press = false;
+			//Button A
+			if (Input::getButtonA()) {
+				if (!a_press) {
+					a_press = true;
+					//TODO
+				}
 			}
-		}
-		else a_press = false;
-		//Button LS
-		if (Input::getButtonStickL()) {
-			if (!ls_press) {
-				ls_press = true;
-				cave->resetCubePosition();
+			else a_press = false;
+			//Button LS
+			if (Input::getButtonStickL()) {
+				if (!ls_press) {
+					ls_press = true;
+					cave->resetCubePosition();
+				}
 			}
-		}
-		else ls_press = false;
-		//Button RS
-		if (Input::getButtonStickR()) {
-			if (!rs_press) {
-				rs_press = true;
-				cave->resetCubeScale();
+			else ls_press = false;
+			//Button RS
+			if (Input::getButtonStickR()) {
+				if (!rs_press) {
+					rs_press = true;
+					cave->resetCubeScale();
+				}
 			}
+			else rs_press = false;
 		}
-		else rs_press = false;
-
 		//==============================================================================UPDATE
-		//Update hand positions
-		projectManager->updateHands(ovr::toGlm(handPoses[ovrHand_Left]), ovr::toGlm(handPoses[ovrHand_Right]));
+		{
+			//Update hand positions
+			projectManager->updateHands(ovr::toGlm(handPoses[ovrHand_Left]), ovr::toGlm(handPoses[ovrHand_Right]));
 
-		//Calls update in children
-		projectManager->update(ovr_GetTimeInSeconds() - lastTime);
-		cave->update(ovr_GetTimeInSeconds() - lastTime);
-		lastTime = ovr_GetTimeInSeconds();
-
+			//Calls update in children
+			projectManager->update(ovr_GetTimeInSeconds() - lastTime);
+			cave->update(ovr_GetTimeInSeconds() - lastTime);
+			lastTime = ovr_GetTimeInSeconds();
+		}
 		//==============================================================================DRAW
-		ovr::for_each_eye([&](ovrEyeType eye) {
-			//---------------------------------------------------Setup
-			const auto& vp = _sceneLayer.Viewport[eye];
-			glViewport(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h);
-			_sceneLayer.RenderPose[eye] = eyePoses[eye];
-			//---------------------------------------------------View Matrix
-			glm::mat4 view = glm::inverse(ovr::toGlm(eyePoses[eye]));
-			glm::mat4 projection = _eyeProjections[eye];
-			//---------------------------------------------------Cave Vars
-			glm::mat4 caveView = glm::inverse(ovr::toGlm(eyePoses[eye]));
-			glm::vec3 eyepos = ovr::toGlm(eyePoses[eye].Position);
-			//---------------------------------------------------Head in hand mode
-			if (itl_press || itr_press) {
-				if (itl_press) caveView = ovr::toGlm(handPoses[ovrHand_Left]);
-				if (itr_press) caveView = ovr::toGlm(handPoses[ovrHand_Right]);
+		{
+			ovr::for_each_eye([&](ovrEyeType eye) {
+				//---------------------------------------------------Setup
+				const auto& vp = _sceneLayer.Viewport[eye];
+				glViewport(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h);
+				_sceneLayer.RenderPose[eye] = eyePoses[eye];
+				//---------------------------------------------------View Matrix
+				glm::mat4 view = glm::inverse(ovr::toGlm(eyePoses[eye]));
+				glm::mat4 projection = _eyeProjections[eye];
+				//---------------------------------------------------Cave Vars
+				glm::mat4 caveView = glm::inverse(ovr::toGlm(eyePoses[eye]));
+				glm::vec3 eyepos = ovr::toGlm(eyePoses[eye].Position);
+				//---------------------------------------------------Head in hand mode
+				if (itl_press || itr_press) {
+					if (itl_press) caveView = ovr::toGlm(handPoses[ovrHand_Left]);
+					if (itr_press) caveView = ovr::toGlm(handPoses[ovrHand_Right]);
 
-				if (eye == ovrEye_Left)	caveView = glm::translate(caveView, glm::vec3(-0.0325f, 0, 0));	//left 
-				else					caveView = glm::translate(caveView, glm::vec3(0.0325f, 0, 0));	//right
+					if (eye == ovrEye_Left)	caveView = glm::translate(caveView, glm::vec3(-0.0325f, 0, 0));	//left 
+					else					caveView = glm::translate(caveView, glm::vec3(0.0325f, 0, 0));	//right
 
-				eyepos = caveView[3];
-			}
-			//---------------------------------------------------Freeze cave tracking
-			if (freezeCave) eyepos = lastEyepos[eye];
-			//---------------------------------------------------Send to Cave
-			cave->setEyePos(eyepos, eye);
-			cave->setViewport(glm::vec4(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h), eye);
-			//---------------------------------------------------Draw debug pyramids
-			if (a_press) {
-				cave->drawDebugLines(view, projection, lastEyepos[ovrEye_Left], ovrEye_Left);	//Draw left eye debug
-				cave->drawDebugLines(view, projection, lastEyepos[ovrEye_Right], ovrEye_Right);	//Draw right eye debug
-			}
-			//---------------------------------------------------Render Scene
-			projectManager->draw(view, projection, eye);
-			cave->draw(view, projection, eye);
-			//---------------------------------------------------Store variables for next frame
-			lastView[eye] = view;
-			lastEyepos[eye] = eyepos;
-		});
+					eyepos = caveView[3];
+				}
+				//---------------------------------------------------Freeze cave tracking
+				if (freezeCave) eyepos = lastEyepos[eye];
+				//---------------------------------------------------Send to Cave
+				cave->setEyePos(eyepos, eye);
+				cave->setViewport(glm::vec4(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h), eye);
+				//---------------------------------------------------Draw debug pyramids
+				if (a_press) {
+					cave->drawDebugLines(view, projection, lastEyepos[ovrEye_Left], ovrEye_Left);	//Draw left eye debug
+					cave->drawDebugLines(view, projection, lastEyepos[ovrEye_Right], ovrEye_Right);	//Draw right eye debug
+				}
+				//---------------------------------------------------Render Scene
+				projectManager->draw(view, projection, eye);
+				cave->draw(view, projection, eye);
+				//---------------------------------------------------Store variables for next frame
+				lastView[eye] = view;
+				lastEyepos[eye] = eyepos;
+			});
+		}
 		//=================================================================================
 
 		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
