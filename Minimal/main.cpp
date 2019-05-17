@@ -735,7 +735,7 @@ protected:
 		if (Input::getButtonX()) {
 			if (!x_press) {
 				x_press = true;
-				//TODO
+				cave->toggleLCD();
 			}
 		}
 		else x_press = false;

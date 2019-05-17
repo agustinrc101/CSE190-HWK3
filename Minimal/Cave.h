@@ -20,12 +20,14 @@ public:
 	void resetCubeScale();
 	void moveCube(glm::vec3 t);
 	void resetCubePosition();
+	void toggleLCD(){ displayAsLCD = !displayAsLCD; }
 
 private:
 	glm::mat4 toWorld = glm::mat4(1.0f);
 	GLuint FBO, rboId, renderedTexture;
 	glm::vec3 eyePos[2] = { glm::vec3(1.0f), glm::vec3(1.0f) };
 	glm::vec4 viewport[2] = { glm::vec4(1.0f), glm::vec4(1.0f) };
+	bool displayAsLCD = true;
 
 	void initPlanes();
 	void initCorners();

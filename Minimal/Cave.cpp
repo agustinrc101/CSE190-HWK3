@@ -186,8 +186,8 @@ void Cave::draw(glm::mat4 headPose, glm::mat4 projection, int eye) {
 		//Draw texture for LEFT plane
 		glBindFramebuffer(GL_FRAMEBUFFER, 1);
 		glViewport((GLint)viewport[eye].x, (GLint)viewport[eye].y, (GLsizei)viewport[eye].z, (GLsizei)viewport[eye].w);
-		//planeL->draw(projection, headPose, Shaders::getRenderedTextureShader(), m, renderedTexture, eyePos[eye]);
-		planeL->draw(projection, headPose, Shaders::getLCDisplayShader(), m, renderedTexture, getDisplayNormal(0), eyePos[eye]);
+		if(displayAsLCD) planeL->draw(projection, headPose, Shaders::getLCDisplayShader(), m, renderedTexture, getDisplayNormal(0), eyePos[eye]);
+		else planeL->draw(projection, headPose, Shaders::getRenderedTextureShader(), m, renderedTexture, eyePos[eye]);
 		glClearDepth(rboId);
 	}
 	//RIGHT PLANE
@@ -198,8 +198,8 @@ void Cave::draw(glm::mat4 headPose, glm::mat4 projection, int eye) {
 		//Draw texture for RIGHT plane
 		glBindFramebuffer(GL_FRAMEBUFFER, 1);
 		glViewport((GLint)viewport[eye].x, (GLint)viewport[eye].y, (GLsizei)viewport[eye].z, (GLsizei)viewport[eye].w);
-		//planeR->draw(projection, headPose, Shaders::getRenderedTextureShader(), m, renderedTexture, eyePos[eye]);
-		planeR->draw(projection, headPose, Shaders::getLCDisplayShader(), m, renderedTexture, getDisplayNormal(1), eyePos[eye]);
+		if(displayAsLCD) planeR->draw(projection, headPose, Shaders::getLCDisplayShader(), m, renderedTexture, getDisplayNormal(1), eyePos[eye]);
+		else planeR->draw(projection, headPose, Shaders::getRenderedTextureShader(), m, renderedTexture, eyePos[eye]);
 		glClearDepth(rboId);
 	}
 	//BOTTOM PLANE
@@ -210,8 +210,8 @@ void Cave::draw(glm::mat4 headPose, glm::mat4 projection, int eye) {
 		//Draw texture for BOTTOM plane
 		glBindFramebuffer(GL_FRAMEBUFFER, 1);
 		glViewport((GLint)viewport[eye].x, (GLint)viewport[eye].y, (GLsizei)viewport[eye].z, (GLsizei)viewport[eye].w);
-		//planeB->draw(projection, headPose, Shaders::getRenderedTextureShader(), m, renderedTexture, eyePos[eye]);
-		planeB->draw(projection, headPose, Shaders::getLCDisplayShader(), m, renderedTexture, getDisplayNormal(2), eyePos[eye]);
+		if(displayAsLCD) planeB->draw(projection, headPose, Shaders::getLCDisplayShader(), m, renderedTexture, getDisplayNormal(2), eyePos[eye]);
+		else planeB->draw(projection, headPose, Shaders::getRenderedTextureShader(), m, renderedTexture, eyePos[eye]);
 		glClearDepth(rboId);
 	}
 }
